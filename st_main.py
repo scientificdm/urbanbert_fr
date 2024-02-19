@@ -6,10 +6,13 @@ import numpy as np
 # Define tokenizer:
 tokenizer = CamembertTokenizer.from_pretrained("camembert-base")
 
+@st.cache_resource
+def load_model():
+	  return CamembertForSequenceClassification.from_pretrained("herelles/camembert-base-lupan")
+
 # Load the model:
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = CamembertForSequenceClassification.from_pretrained("herelles/camembert-base-lupan")
-model.to(device)
+model = load_model()
+model.to('cpu')
 
 def prediction(segment_text):    
     test_ids = []
@@ -26,7 +29,7 @@ def prediction(segment_text):
     
     # Forward pass, calculate logit predictions
     with torch.no_grad():
-      output = model(test_ids.to(device), token_type_ids = None, attention_mask = test_attention_mask.to(device))
+      output = model(test_ids.to('cpu'), token_type_ids = None, attention_mask = test_attention_mask.to('cpu'))
     
     return np.argmax(output.logits.cpu().numpy()).flatten().item()
 
