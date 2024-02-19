@@ -3,14 +3,18 @@ from transformers import CamembertTokenizer, CamembertForSequenceClassification
 import torch
 import numpy as np
 
-# Define tokenizer:
-tokenizer = CamembertTokenizer.from_pretrained("camembert-base")
+@st.cache_resource
+def load_tokenizer():
+    return CamembertTokenizer.from_pretrained("camembert-base")
 
 @st.cache_resource
 def load_model():
-	  return CamembertForSequenceClassification.from_pretrained("herelles/camembert-base-lupan")
+    return CamembertForSequenceClassification.from_pretrained("herelles/camembert-base-lupan")
 
-# Load the model:
+# Define tokenizer:
+tokenizer = load_tokenizer()
+
+# Load model:
 model = load_model()
 model.to('cpu')
 
